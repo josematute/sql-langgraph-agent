@@ -1,33 +1,14 @@
-from langchain.agents import create_agent
-from dotenv import load_dotenv
+"""Entry point for PostgreSQL agent CLI."""
 
-# Load environment variables
-load_dotenv()
+import sys
+from pathlib import Path
 
+# Add src directory to path for development
+src_path = Path(__file__).parent / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
 
-def main():
-    """Simple agent example that prints to console."""
-    # Create a simple agent
-    agent = create_agent(
-        model="openai:gpt-4o-mini",
-        system_prompt="You are a helpful assistant. Be concise and friendly.",
-    )
-    
-    # Invoke with a simple message
-    result = agent.invoke({"messages": "Hello! Can you tell me a short joke?"})
-    
-    # Print the response
-    print("\n" + "="*50)
-    print("Agent Response:")
-    print("="*50)
-    print(result["messages"][-1].content)
-    print("="*50 + "\n")
-    
-    # Show message history
-    print("Message History:")
-    for msg in result["messages"]:
-        print(f"{msg.type}: {msg.content}\n")
-
+from postgres_agent.cli import cli
 
 if __name__ == "__main__":
-    main()
+    cli()
