@@ -48,46 +48,43 @@ uv sync
 
 ### Database Setup
 
-The agent uses a default PostgreSQL database (simple e-commerce sample database) running in Docker.
+The agent needs a PostgreSQL database to connect to. You have two options:
 
-**Option 1: Use Default Database (Recommended for Quick Start)**
+#### Option 1: Use Default Database (Recommended for Quick Start)
 
-Start the default PostgreSQL database with Docker:
+The project includes a Docker setup with a sample database. This is the easiest way to get started:
 
 ```bash
-# Start the database container (creates sample database automatically)
-docker-compose up -d
+# Start the default PostgreSQL database with sample data
+docker compose up -d
 
 # Check if it's running
-docker-compose ps
+docker compose ps
 ```
 
-The database will be available at `postgresql://postgres:postgres@localhost:5432/sample_db`
+The default database will be available at:
 
-The sample database includes:
+-   **Connection**: `postgresql://postgres:postgres@localhost:5432/sample_db`
+-   **Sample data**: Includes customers, products, orders, and order_items tables
 
--   **customers** table (5 sample customers)
--   **products** table (8 sample products)
--   **orders** table (5 sample orders)
--   **order_items** table (order details)
--   **Views**: `customer_orders` and `product_sales`
+**No configuration needed** - the agent will automatically use this database if `POSTGRES_URI` is not set in your `.env` file.
 
-**Option 2: Use Your Own Database**
+#### Option 2: Use Your Own Database
 
-Set your own PostgreSQL connection string in `.env`:
+If you have your own PostgreSQL database (local, AWS RDS, Neon, etc.), set the connection string in your `.env` file:
 
 ```bash
-# Add to .env file
-POSTGRES_URI=postgresql://user:password@host:5432/dbname
+# Add to your .env file
+POSTGRES_URI=postgresql://user:password@host:port/database
 ```
 
-For example, to use a Neon database or AWS RDS instance, just set the `POSTGRES_URI` environment variable.
+**Examples:**
 
-**Stop the default database:**
+-   Local database: `POSTGRES_URI=postgresql://user:pass@localhost:5432/mydb`
+-   AWS RDS: `POSTGRES_URI=postgresql://user:pass@your-rds-endpoint:5432/mydb`
+-   Neon: `POSTGRES_URI=postgresql://user:pass@your-neon-endpoint/dbname`
 
-```bash
-docker-compose down
-```
+**Note**: If `POSTGRES_URI` is set, it will override the default database.
 
 ### Running the Agent
 
@@ -102,18 +99,10 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 python main.py chat
 ```
 
-The agent will connect to your database and you can ask questions about the schema and data!
-
-## 📚 Project Status
-
-This project is currently in development. See `docs/plan.md` for the full implementation plan.
+The agent will connect to your configured database and you can ask questions about the schema and data!
 
 ### Getting Started with LangSmith (Optional)
 
 -   Create a [LangSmith](https://smith.langchain.com/) account
 -   Create a LangSmith API key
 -   Add it to your `.env` file as shown above
-
----
-
-**Note**: LangSmith Studio integration - TBD
