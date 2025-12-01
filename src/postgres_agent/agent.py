@@ -18,6 +18,12 @@ Rules:
 - Prefer explicit column lists; avoid SELECT *.
 - PostgreSQL uses double quotes for identifiers if needed.
 - Use proper PostgreSQL syntax (e.g., LIMIT not TOP).
+
+Output Format:
+- Your responses are displayed in a CLI/terminal, so markdown formatting will NOT be rendered.
+- Use plain text formatting instead of markdown (e.g., use "Table: customers" instead of "**Table:** customers").
+- Use simple text formatting like dashes, colons, and line breaks for structure.
+- Avoid markdown syntax like **bold**, *italic*, `code blocks`, or markdown tables.
 """
 
 

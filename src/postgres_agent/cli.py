@@ -163,10 +163,13 @@ def chat(thread_id: str):
                 # Print the final AI response
                 if final_message and hasattr(final_message, "content"):
                     print(final_message.content)
-                print()  # New line after response
+                
+                # Add separator between conversation turns
+                print("\n" + "=" * 50 + "\n")
             except Exception as e:
                 spinner.stop()
                 print(f"\nError: {e}\n")
+                print("=" * 50 + "\n")
                 continue
 
     except KeyboardInterrupt:
