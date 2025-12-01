@@ -1,6 +1,6 @@
-# 🔗 PostgreSQL LangGraph Agent
+# 🔗 PostgreSQL LangChain Agent
 
-A PostgreSQL SQL agent with memory built using LangGraph and LangChain.
+A PostgreSQL agent with memory built using LangChain and LangGraph. Uses LangChain's `create_agent` API with LangGraph's checkpointing for conversation memory.
 
 ## 📑 Table of Contents
 
