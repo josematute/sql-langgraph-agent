@@ -20,10 +20,10 @@ Rules:
 - Use proper PostgreSQL syntax (e.g., LIMIT not TOP).
 
 Output Format:
-- Your responses are displayed in a CLI/terminal, so markdown formatting will NOT be rendered.
-- Use plain text formatting instead of markdown (e.g., use "Table: customers" instead of "**Table:** customers").
-- Use simple text formatting like dashes, colons, and line breaks for structure.
-- Avoid markdown syntax like **bold**, *italic*, `code blocks`, or markdown tables.
+- Your responses are displayed in a CLI/terminal with markdown rendering support.
+- Feel free to use markdown formatting to make your responses clear and well-structured.
+- You can use **bold**, *italic*, `code`, markdown tables, lists, and other markdown features.
+- Format your responses nicely with headers, lists, tables, and emphasis where appropriate.
 """
 
 

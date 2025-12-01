@@ -1,46 +1,23 @@
 """Interactive CLI for PostgreSQL agent."""
 
 import sys
-import threading
-import time
 
 import click
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.rule import Rule
+from rich.status import Status
+from rich.syntax import Syntax
 
 from .agent import create_sql_agent, get_agent_context
+
+console = Console()
 
 
 @click.group()
 def cli():
     """PostgreSQL LangGraph Agent CLI"""
-
-
-class Spinner:
-    """Simple spinner for loading indicators."""
-
-    def __init__(self, message="Loading"):
-        self.message = message
-        self.spinner_chars = "|/-\\"
-        self.spinner_index = 0
-        self.running = False
-        self.thread = None
-
-    def _spin(self):
-        while self.running:
-            char = self.spinner_chars[self.spinner_index % len(self.spinner_chars)]
-            print(f"\r{self.message} {char}", end="", flush=True)
-            self.spinner_index += 1
-            time.sleep(0.1)
-
-    def start(self):
-        self.running = True
-        self.thread = threading.Thread(target=self._spin, daemon=True)
-        self.thread.start()
-
-    def stop(self):
-        self.running = False
-        if self.thread:
-            self.thread.join()
-        print("\r" + " " * (len(self.message) + 3) + "\r", end="", flush=True)
 
 
 @cli.command()
@@ -58,22 +35,18 @@ def chat(thread_id: str):
 
     Exit with Ctrl+C or type 'exit'/'quit'.
     """
-    print("PostgreSQL SQL Agent - Interactive Chat Mode")
-    print("=" * 50)
-    print(f"Thread ID: {thread_id}")
-    print("Type 'exit' or 'quit' to end the conversation")
-    print("=" * 50)
-    print()
+    console.print("\n[bold cyan]PostgreSQL SQL Agent[/bold cyan] - Interactive Chat Mode")
+    console.print(Rule(style="cyan"))
+    console.print(f"[dim]Thread ID:[/dim] {thread_id}")
+    console.print("[dim]Type 'exit', 'quit' or 'q' to end the conversation[/dim]")
+    console.print(Rule(style="cyan"))
+    console.print()
 
     # Create agent and get context with loading indicator
-    spinner = Spinner("Initializing agent and connecting to database")
-    spinner.start()
-    try:
+    with Status("Initializing agent and connecting to database", console=console):
         agent = create_sql_agent()
         context = get_agent_context()
-    finally:
-        spinner.stop()
-    print("✅ Ready!\n")
+    console.print("✅ Ready!\n", style="green")
 
     try:
         while True:
@@ -93,36 +66,33 @@ def chat(thread_id: str):
                 break
 
             # Stream agent response with loading indicator
-            print("\nAgent: ", end="", flush=True)
-            spinner = Spinner("Thinking")
-            spinner.start()
+            console.print("\n[bold blue]Agent:[/bold blue] ", end="")
             try:
-                all_messages = []
-                final_message = None
-                messages_before = None
-                
-                # Get message count before this turn (to filter only new messages)
-                # We'll check the first step to see how many messages existed before
-                first_step = True
-                
-                for step in agent.stream(
-                    {"messages": [{"role": "user", "content": question}]},
-                    {"configurable": {"thread_id": thread_id}},
-                    context=context,
-                    stream_mode="values",
-                ):
-                    # Get all messages from each step
-                    if "messages" in step and step["messages"]:
-                        all_messages = step["messages"]
-                        final_message = step["messages"][-1]
-                        
-                        # On first step, capture the message count before our new user message
-                        if first_step:
-                            # The user message we just added is at the end, so count before it
-                            messages_before = len(all_messages) - 1
-                            first_step = False
-                
-                spinner.stop()
+                with Status("Thinking", console=console):
+                    all_messages = []
+                    final_message = None
+                    messages_before = None
+                    
+                    # Get message count before this turn (to filter only new messages)
+                    # We'll check the first step to see how many messages existed before
+                    first_step = True
+                    
+                    for step in agent.stream(
+                        {"messages": [{"role": "user", "content": question}]},
+                        {"configurable": {"thread_id": thread_id}},
+                        context=context,
+                        stream_mode="values",
+                    ):
+                        # Get all messages from each step
+                        if "messages" in step and step["messages"]:
+                            all_messages = step["messages"]
+                            final_message = step["messages"][-1]
+                            
+                            # On first step, capture the message count before our new user message
+                            if first_step:
+                                # The user message we just added is at the end, so count before it
+                                messages_before = len(all_messages) - 1
+                                first_step = False
                 
                 # Extract and display SQL queries only from the current interaction
                 # (skip messages from previous conversations due to memory)
@@ -153,23 +123,44 @@ def chat(thread_id: str):
                 
                 # Display SQL queries if any
                 if sql_queries:
-                    print("\n" + "─" * 50)
+                    console.print()
                     for i, query in enumerate(sql_queries, 1):
-                        print(f"[SQL QUERY {i}]:")
-                        print(query)
-                        print("─" * 50)
-                    print()
+                        # Syntax highlight SQL queries
+                        sql_syntax = Syntax(
+                            query,
+                            "sql",
+                            theme="monokai",
+                            line_numbers=False,
+                            word_wrap=True,
+                        )
+                        console.print(
+                            Panel(
+                                sql_syntax,
+                                title=f"[bold yellow]SQL Query {i}[/bold yellow]",
+                                border_style="yellow",
+                                expand=False,
+                            )
+                        )
+                    console.print()
                 
                 # Print the final AI response
                 if final_message and hasattr(final_message, "content"):
-                    print(final_message.content)
+                    content = final_message.content
+                    # Always render as markdown - Rich handles both markdown and plain text gracefully
+                    try:
+                        console.print(Markdown(content))
+                    except Exception:
+                        # Fallback to plain text if markdown parsing fails
+                        console.print(content)
                 
                 # Add separator between conversation turns
-                print("\n" + "=" * 50 + "\n")
+                console.print()
+                console.print(Rule(style="dim"))
+                console.print()
             except Exception as e:
-                spinner.stop()
-                print(f"\nError: {e}\n")
-                print("=" * 50 + "\n")
+                console.print(f"\n[bold red]Error:[/bold red] {e}\n")
+                console.print(Rule(style="dim"))
+                console.print()
                 continue
 
     except KeyboardInterrupt:
