@@ -40,20 +40,40 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 **Option 2: Use AWS Bedrock**
 
+**Recommended: Use AWS Profile (Preferred)**
+
+AWS profiles are stored in `~/.aws/credentials` and are more secure and easier to manage:
+
 ```bash
 # Set model provider explicitly (optional, auto-detected if AWS credentials exist)
 MODEL_PROVIDER=bedrock
 
-# AWS credentials (use either credentials OR profile, not both)
+# Use AWS profile (recommended - reads from ~/.aws/credentials)
+AWS_PROFILE=your_aws_profile_name
+AWS_REGION=us-east-1  # Optional, defaults to us-east-1
+```
+
+**Alternative: Direct Credentials**
+
+If you don't have an AWS profile set up, you can use direct credentials:
+
+```bash
+# Set model provider explicitly (optional, auto-detected if AWS credentials exist)
+MODEL_PROVIDER=bedrock
+
+# Direct AWS credentials (fallback if profile not available)
 AWS_ACCESS_KEY_ID=your_aws_access_key_id
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
 AWS_REGION=us-east-1  # Optional, defaults to us-east-1
+```
 
-# OR use AWS profile instead:
-# AWS_PROFILE=your_aws_profile_name
+**Note**: The code checks for `AWS_PROFILE` first. If set, it uses the profile. Otherwise, it falls back to direct credentials.
 
-# Optional: Custom Bedrock model (defaults to Claude Haiku)
-# BEDROCK_MODEL_ID=anthropic.claude-haiku-4-5-20251001-v1:0
+**Optional Configuration:**
+
+```bash
+# Custom Bedrock model (defaults to Claude Haiku)
+BEDROCK_MODEL_ID=anthropic.claude-haiku-4-5-20251001-v1:0
 ```
 
 **Optional: LangSmith tracing**
@@ -138,3 +158,12 @@ The agent will connect to your configured database and you can ask questions abo
 -   Create a [LangSmith](https://smith.langchain.com/) account
 -   Create a LangSmith API key
 -   Add it to your `.env` file as shown above
+
+## Acknowledgments
+
+This project is based on the [LangChain Essentials - Python](https://academy.langchain.com/courses/langchain-essentials-python) course from LangChain Academy. The agent implementation follows patterns and examples from the course materials, particularly:
+
+-   Lesson 1: Create Agent - SQL agent implementation
+-   Lesson 6: Memory - Conversation memory with `InMemorySaver`
+
+The original course materials and examples can be found in the [LangChain Essentials GitHub repository](https://github.com/langchain-ai/lca-langchainV1-essentials/tree/main/python).

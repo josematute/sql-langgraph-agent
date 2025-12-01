@@ -13,8 +13,6 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 load_dotenv()
 
 # Default local PostgreSQL database (Docker container)
-# This provides a working database out of the box, similar to Chinook.db for SQLite
-# Start with: docker-compose up -d
 DEFAULT_POSTGRES_URI = (
     "postgresql://postgres:postgres@localhost:5432/sample_db"
 )
@@ -170,8 +168,7 @@ def _create_bedrock_model():
         )
     else:
         # Using direct credentials
-        # If no credentials provided, boto3 will use default credential chain
-        # (IAM role, environment, etc.)
+        # If no credentials provided, boto3 will use default credential chain (IAM role, environment, etc.)
         if credentials:
             return ChatBedrockConverse(
                 model=model_id,
@@ -184,4 +181,3 @@ def _create_bedrock_model():
                 model=model_id,
                 region_name=region,
             )
-
