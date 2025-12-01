@@ -3,7 +3,7 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 
-from .config import get_database
+from .config import get_database, get_model
 from .context import RuntimeContext
 from .tools import execute_sql
 
@@ -21,16 +21,20 @@ Rules:
 """
 
 
-def create_sql_agent(model: str = "openai:gpt-4o-mini"):
+def create_sql_agent(model=None):
     """
     Create agent with memory for PostgreSQL queries.
 
     Args:
-        model: Model identifier (default: "openai:gpt-4o-mini")
+        model: Model identifier or instance (optional, defaults to config)
 
     Returns:
         Agent with memory checkpointing enabled
     """
+    # Use provided model or get from config
+    if model is None:
+        model = get_model()
+    
     return create_agent(
         model=model,
         tools=[execute_sql],

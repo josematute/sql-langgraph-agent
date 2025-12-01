@@ -9,7 +9,9 @@ A PostgreSQL SQL agent with memory built using LangGraph and LangChain.
 -   Python 3.11 - 3.13 (as specified in `pyproject.toml`)
 -   [uv](https://docs.astral.sh/uv/) package manager or [pip](https://pypi.org/project/pip/)
 -   [Docker](https://www.docker.com/) and Docker Compose (for default database)
--   OpenAI API key
+-   **Model Provider** (choose one):
+    -   OpenAI API key (default)
+    -   AWS Bedrock credentials (optional)
 
 ### Installation
 
@@ -29,15 +31,45 @@ cp example.env .env
 
 Insert API keys directly into `.env` file
 
-```bash
-# Add OpenAI API key (required)
-OPENAI_API_KEY=your_openai_api_key_here
+**Option 1: Use OpenAI (Default)**
 
-# Optional: For LangSmith tracing
+```bash
+# Add OpenAI API key
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+**Option 2: Use AWS Bedrock**
+
+```bash
+# Set model provider explicitly (optional, auto-detected if AWS credentials exist)
+MODEL_PROVIDER=bedrock
+
+# AWS credentials (use either credentials OR profile, not both)
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=us-east-1  # Optional, defaults to us-east-1
+
+# OR use AWS profile instead:
+# AWS_PROFILE=your_aws_profile_name
+
+# Optional: Custom Bedrock model (defaults to Claude Haiku)
+# BEDROCK_MODEL_ID=anthropic.claude-haiku-4-5-20251001-v1:0
+```
+
+**Optional: LangSmith tracing**
+
+```bash
 LANGSMITH_API_KEY=your_langsmith_api_key_here
 LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=pg-langgraph-agent
 ```
+
+**Model Provider Selection:**
+
+-   If `MODEL_PROVIDER=bedrock` is set → uses AWS Bedrock
+-   If `MODEL_PROVIDER=openai` is set → uses OpenAI
+-   If `MODEL_PROVIDER` not set but AWS credentials exist → auto-detects Bedrock
+-   Otherwise → defaults to OpenAI
 
 Create virtual environment and install dependencies
 
