@@ -2,12 +2,23 @@
 
 A PostgreSQL SQL agent with memory built using LangGraph and LangChain.
 
+## 📑 Table of Contents
+
+-   [Setup](#-setup)
+    -   [Prerequisites](#prerequisites)
+    -   [Installation](#installation)
+    -   [Database Setup](#database-setup)
+    -   [Running the Agent](#running-the-agent)
+-   [Example Questions](#-example-questions)
+-   [Getting Started with LangSmith (Optional)](#getting-started-with-langsmith-optional)
+-   [Acknowledgments](#acknowledgments)
+
 ## 🚀 Setup
 
 ### Prerequisites
 
 -   Python 3.11 - 3.13 (as specified in `pyproject.toml`)
--   [uv](https://docs.astral.sh/uv/) package manager or [pip](https://pypi.org/project/pip/)
+-   [uv](https://docs.astral.sh/uv/) package manager
 -   [Docker](https://www.docker.com/) and Docker Compose (for default database)
 -   **Model Provider** (choose one):
     -   OpenAI API key (default)
@@ -18,7 +29,7 @@ A PostgreSQL SQL agent with memory built using LangGraph and LangChain.
 Clone this repository and navigate to the project directory
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/josematute/pg-langgraph-agent.git
 cd pg-langgraph-agent
 ```
 
@@ -42,32 +53,32 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 **Recommended: Use AWS Profile (Preferred)**
 
-AWS profiles are stored in `~/.aws/credentials` and are more secure and easier to manage:
+If you have an AWS profile configured in `~/.aws/credentials`, you only need to set:
 
 ```bash
 # Set model provider explicitly (optional, auto-detected if AWS credentials exist)
 MODEL_PROVIDER=bedrock
 
-# Use AWS profile (recommended - reads from ~/.aws/credentials)
+# Use AWS profile (only these two lines needed if you have a profile)
 AWS_PROFILE=your_aws_profile_name
 AWS_REGION=us-east-1  # Optional, defaults to us-east-1
 ```
 
 **Alternative: Direct Credentials**
 
-If you don't have an AWS profile set up, you can use direct credentials:
+If you don't have an AWS profile set up, you can use direct credentials instead:
 
 ```bash
 # Set model provider explicitly (optional, auto-detected if AWS credentials exist)
 MODEL_PROVIDER=bedrock
 
-# Direct AWS credentials (fallback if profile not available)
+# Direct AWS credentials (use this if you don't have a profile)
 AWS_ACCESS_KEY_ID=your_aws_access_key_id
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
 AWS_REGION=us-east-1  # Optional, defaults to us-east-1
 ```
 
-**Note**: The code checks for `AWS_PROFILE` first. If set, it uses the profile. Otherwise, it falls back to direct credentials.
+**Note**: The code checks for `AWS_PROFILE` first. If set, it uses the profile (you only need `AWS_PROFILE` and optionally `AWS_REGION`). Otherwise, it falls back to direct credentials.
 
 **Optional Configuration:**
 
@@ -153,17 +164,82 @@ python main.py chat
 
 The agent will connect to your configured database and you can ask questions about the schema and data!
 
-### Getting Started with LangSmith (Optional)
+## 💡 Example Questions
 
--   Create a [LangSmith](https://smith.langchain.com/) account
--   Create a LangSmith API key
--   Add it to your `.env` file as shown above
+Once the agent is running, you can ask questions about your database schema and data. The example questions below apply to the **default local Docker Compose PostgreSQL database** (with customers, products, orders, and order_items tables).
+
+**Schema Exploration:**
+
+-   "What tables are in this database?"
+-   "Show me the schema for the customers table"
+-   "What columns does the orders table have?"
+
+**Data Queries:**
+
+-   "Show me all customers"
+-   "List all products with their prices"
+-   "How many orders do we have?"
+-   "Show me all customer orders with order items and product names"
+-   "What are the top 5 products by sales?"
+
+**Analytical Questions:**
+
+-   "Which customer has the most orders?"
+-   "What's the total revenue from all orders?"
+-   "Show me orders from the last month"
+-   "Which products are in the most orders?"
+
+**Follow-up Questions (Memory):**
+
+-   "Show me more details about that first customer"
+-   "What products are in those orders?"
+-   "How much did that customer spend in total?"
+
+The agent maintains conversation context, so you can ask follow-up questions naturally without repeating information from previous queries.
+
+## Getting Started with LangSmith (Optional)
+
+LangSmith provides tracing, debugging, and monitoring for your agent. It's completely optional but can be helpful for development and debugging.
+
+**To enable LangSmith:**
+
+1.  Create a [LangSmith](https://smith.langchain.com/) account (free tier available)
+2.  Create a LangSmith API key from your [LangSmith settings](https://smith.langchain.com/settings)
+3.  Uncomment and fill in the LangSmith configuration in your `.env` file:
+
+```bash
+# In your .env file, uncomment and set:
+LANGSMITH_API_KEY=your_langsmith_api_key_here
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=pg-langgraph-agent
+```
+
+**Note:** The LangSmith configuration is commented out by default in `example.env`. You need to uncomment these lines and add your API key to enable tracing.
+
+**To view traces:**
+
+1.  Go to [https://smith.langchain.com/](https://smith.langchain.com/) and sign in
+2.  Select your project: Use the project selector (top left) and choose `pg-langgraph-agent` (or whatever you set in `LANGSMITH_PROJECT`)
+3.  View traces: After running the agent, traces will appear in the project. You'll see:
+    -   Each agent run as a trace
+    -   Tool calls (e.g., SQL queries executed)
+    -   LLM requests and responses
+    -   Token usage and timing
+    -   The full conversation flow
+4.  Click on any trace to see:
+    -   The full conversation
+    -   Each step the agent took
+    -   SQL queries executed
+    -   LLM prompts and responses
+    -   Timing and costs
+
+Traces appear automatically once `LANGSMITH_TRACING=true` is set and you run the agent. They show up in real-time as you use the CLI.
 
 ## Acknowledgments
 
 This project is based on the [LangChain Essentials - Python](https://academy.langchain.com/courses/langchain-essentials-python) course from LangChain Academy. The agent implementation follows patterns and examples from the course materials, particularly:
 
--   Lesson 1: Create Agent - SQL agent implementation
--   Lesson 6: Memory - Conversation memory with `InMemorySaver`
+-   **Lesson 1: Create Agent** - SQL agent implementation
+-   **Lesson 6: Memory** - Conversation memory with `InMemorySaver`
 
 The original course materials and examples can be found in the [LangChain Essentials GitHub repository](https://github.com/langchain-ai/lca-langchainV1-essentials/tree/main/python).
