@@ -1,2 +1,2 @@
-"""PostgreSQL SQL agent with memory."""
+"""SQL agent with memory - works with any SQL database."""
 

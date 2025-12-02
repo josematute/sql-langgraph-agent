@@ -1,6 +1,6 @@
-# 🔗 PostgreSQL LangChain Agent
+# 🔗 SQL LangChain Agent
 
-A PostgreSQL agent with memory built using LangChain and LangGraph. Uses LangChain's `create_agent` API with LangGraph's checkpointing for conversation memory.
+A SQL agent with memory built using LangChain and LangGraph. Works with any SQL database (PostgreSQL, SQLite, MySQL, etc.). Uses LangChain's `create_agent` API with LangGraph's checkpointing for conversation memory.
 
 ## 📑 Table of Contents
 
@@ -111,11 +111,11 @@ uv sync
 
 ### Database Setup
 
-The agent needs a PostgreSQL database to connect to. You have two options:
+The agent works with any SQL database. You have several options:
 
 #### Option 1: Use Default Database (Recommended for Quick Start)
 
-The project includes a Docker setup with a sample database. This is the easiest way to get started:
+The project includes a Docker setup with a sample PostgreSQL database. This is the easiest way to get started:
 
 ```bash
 # Start the default PostgreSQL database with sample data
@@ -130,24 +130,33 @@ The default database will be available at:
 -   **Connection**: `postgresql://postgres:postgres@localhost:5432/sample_db`
 -   **Sample data**: Includes customers, products, orders, and order_items tables
 
-**No configuration needed** - the agent will automatically use this database if `POSTGRES_URI` is not set in your `.env` file.
+**No configuration needed** - the agent will automatically use this database if `DATABASE_URI` is not set in your `.env` file.
 
 #### Option 2: Use Your Own Database
 
-If you have your own PostgreSQL database (local, AWS RDS, Neon, etc.), set the connection string in your `.env` file:
+You can use any SQL database by setting the connection string in your `.env` file:
 
 ```bash
 # Add to your .env file
-POSTGRES_URI=postgresql://user:password@host:port/database
+DATABASE_URI=postgresql://user:password@host:port/database
 ```
+
+**Supported Database Types:**
+
+-   **PostgreSQL**: `DATABASE_URI=postgresql://user:pass@localhost:5432/mydb`
+-   **SQLite**: `DATABASE_URI=sqlite:///path/to/database.db`
+-   **MySQL**: `DATABASE_URI=mysql://user:pass@localhost:3306/mydb`
+-   **Other SQL databases** supported by SQLAlchemy
 
 **Examples:**
 
--   Local database: `POSTGRES_URI=postgresql://user:pass@localhost:5432/mydb`
--   AWS RDS: `POSTGRES_URI=postgresql://user:pass@your-rds-endpoint:5432/mydb`
--   Neon: `POSTGRES_URI=postgresql://user:pass@your-neon-endpoint/dbname`
+-   Local PostgreSQL: `DATABASE_URI=postgresql://user:pass@localhost:5432/mydb`
+-   AWS RDS PostgreSQL: `DATABASE_URI=postgresql://user:pass@your-rds-endpoint:5432/mydb`
+-   Neon PostgreSQL: `DATABASE_URI=postgresql://user:pass@your-neon-endpoint/dbname`
+-   SQLite file: `DATABASE_URI=sqlite:///./mydatabase.db`
+-   MySQL: `DATABASE_URI=mysql://user:pass@localhost:3306/mydb`
 
-**Note**: If `POSTGRES_URI` is set, it will override the default database.
+**Note**: If `DATABASE_URI` is set, it will override the default database.
 
 ### Running the Agent
 
@@ -166,7 +175,7 @@ The agent will connect to your configured database and you can ask questions abo
 
 ## 💡 Example Questions
 
-Once the agent is running, you can ask questions about your database schema and data. The example questions below apply to the **default local Docker Compose PostgreSQL database** (with customers, products, orders, and order_items tables).
+Once the agent is running, you can ask questions about your database schema and data. The example questions below apply to the **default local Docker Compose database** (PostgreSQL with customers, products, orders, and order_items tables), but the agent works with any SQL database.
 
 **Schema Exploration:**
 

@@ -1,4 +1,4 @@
-"""Agent creation with memory for PostgreSQL queries."""
+"""Agent creation with memory for SQL queries."""
 
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
@@ -7,7 +7,7 @@ from .config import get_database, get_model
 from .context import RuntimeContext
 from .tools import execute_sql
 
-SYSTEM_PROMPT = """You are a careful PostgreSQL analyst.
+SYSTEM_PROMPT = """You are a careful SQL analyst.
 
 Rules:
 - Think step-by-step.
@@ -16,8 +16,8 @@ Rules:
 - Limit to 5 rows unless the user explicitly asks otherwise.
 - If the tool returns 'Error:', revise the SQL and try again.
 - Prefer explicit column lists; avoid SELECT *.
-- PostgreSQL uses double quotes for identifiers if needed.
-- Use proper PostgreSQL syntax (e.g., LIMIT not TOP).
+- Use standard SQL syntax appropriate for the database you're working with.
+- If you encounter errors, you may need to discover the database type and adjust syntax accordingly.
 
 Output Format:
 - Your responses are displayed in a CLI/terminal with markdown rendering support.
@@ -29,7 +29,9 @@ Output Format:
 
 def create_sql_agent(model=None):
     """
-    Create agent with memory for PostgreSQL queries.
+    Create agent with memory for SQL queries.
+
+    Works with any SQL database (PostgreSQL, SQLite, MySQL, etc.).
 
     Args:
         model: Model identifier or instance (optional, defaults to config)

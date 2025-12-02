@@ -13,28 +13,40 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 load_dotenv()
 
 # Default local PostgreSQL database (Docker container)
-DEFAULT_POSTGRES_URI = (
+# Can be overridden with DATABASE_URI env var to use any SQL database
+# Supported formats: postgresql://, sqlite:///, mysql://, etc.
+DEFAULT_DATABASE_URI = (
     "postgresql://postgres:postgres@localhost:5432/sample_db"
 )
 
 
 def get_database_uri() -> str:
     """
-    Get PostgreSQL URI with fallback to default.
+    Get SQL database URI with fallback to default.
 
     Priority:
-    1. POSTGRES_URI env var (if provided)
-    2. Default public PostgreSQL database
+    1. DATABASE_URI env var (if provided) - supports any SQL database
+    2. Default PostgreSQL database
+    
+    Supported database URI formats:
+    - PostgreSQL: postgresql://user:pass@host:port/db
+    - SQLite: sqlite:///path/to/database.db
+    - MySQL: mysql://user:pass@host:port/db
+    - And other SQLAlchemy-supported databases
     """
-    uri = os.getenv("POSTGRES_URI")
+    uri = os.getenv("DATABASE_URI")
     if uri:
         return uri
-    return DEFAULT_POSTGRES_URI
+    
+    return DEFAULT_DATABASE_URI
 
 
 def get_database() -> SQLDatabase:
     """
-    Get SQLDatabase instance for PostgreSQL.
+    Get SQLDatabase instance for any SQL database.
+    
+    Supports PostgreSQL, SQLite, MySQL, and other SQLAlchemy-compatible databases.
+    The database type is determined from the connection URI.
     
     Raises:
         SystemExit: If database connection fails with a user-friendly error message.
@@ -49,18 +61,30 @@ def get_database() -> SQLDatabase:
         # Connection or permission error
         error_msg = str(e)
         
+        # Detect database type from URI for better error messages
+        db_type = "database"
+        if uri.startswith("postgresql://"):
+            db_type = "PostgreSQL"
+        elif uri.startswith("sqlite://"):
+            db_type = "SQLite"
+        elif uri.startswith("mysql://"):
+            db_type = "MySQL"
+        
         # Provide user-friendly error message
         print("\n" + "=" * 60, file=sys.stderr)
         print("❌ Database Connection Error", file=sys.stderr)
         print("=" * 60, file=sys.stderr)
-        print("\nThere was a problem connecting to the PostgreSQL database.", file=sys.stderr)
+        print(f"\nThere was a problem connecting to the {db_type} database.", file=sys.stderr)
         print("\nPossible causes:", file=sys.stderr)
         print("  • Database server is not accessible", file=sys.stderr)
         print("  • Insufficient permissions for schema reflection", file=sys.stderr)
         print("  • Invalid connection string", file=sys.stderr)
         print("\nTo fix:", file=sys.stderr)
-        print("  1. Start the default database: docker-compose up -d", file=sys.stderr)
-        print("  2. Or set POSTGRES_URI in your .env file with your own database", file=sys.stderr)
+        if uri == DEFAULT_DATABASE_URI:
+            print("  1. Start the default database: docker-compose up -d", file=sys.stderr)
+            print("  2. Or set DATABASE_URI in your .env file with your own database", file=sys.stderr)
+        else:
+            print("  • Check your DATABASE_URI connection string in your .env file", file=sys.stderr)
         print(f"\nConnection URI: {uri.split('@')[1] if '@' in uri else 'hidden'}", file=sys.stderr)
         print(f"\nTechnical error: {error_msg[:200]}...", file=sys.stderr)
         print("=" * 60 + "\n", file=sys.stderr)

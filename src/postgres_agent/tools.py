@@ -1,4 +1,4 @@
-"""SQL execution tool for PostgreSQL."""
+"""SQL execution tool for any SQL database."""
 
 from langchain_core.tools import tool
 from langgraph.runtime import get_runtime
@@ -9,9 +9,10 @@ from .context import RuntimeContext
 @tool
 def execute_sql(query: str) -> str:
     """
-    Execute a PostgreSQL SELECT query and return results.
+    Execute a SQL SELECT query and return results.
 
     This tool is read-only and only allows SELECT queries.
+    Works with any SQL database (PostgreSQL, SQLite, MySQL, etc.).
     No INSERT/UPDATE/DELETE/ALTER/DROP/CREATE/REPLACE/TRUNCATE commands are allowed.
     """
     runtime = get_runtime(RuntimeContext)

@@ -1,4 +1,4 @@
-"""Entry point for PostgreSQL agent CLI."""
+"""Entry point for SQL agent CLI."""
 
 import sys
 from pathlib import Path

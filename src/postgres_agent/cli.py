@@ -1,4 +1,4 @@
-"""Interactive CLI for PostgreSQL agent."""
+"""Interactive CLI for SQL agent."""
 
 import sys
 
@@ -17,7 +17,7 @@ console = Console()
 
 @click.group()
 def cli():
-    """PostgreSQL LangGraph Agent CLI"""
+    """SQL LangGraph Agent CLI - Works with any SQL database"""
 
 
 @cli.command()
@@ -28,14 +28,15 @@ def cli():
 )
 def chat(thread_id: str):
     """
-    Interactive chat mode with the PostgreSQL agent.
+    Interactive chat mode with the SQL agent.
 
     Ask questions about your database schema and data.
+    Works with any SQL database (PostgreSQL, SQLite, MySQL, etc.).
     The agent maintains conversation context, so follow-up questions work naturally.
 
     Exit with Ctrl+C or type 'exit'/'quit'.
     """
-    console.print("\n[bold cyan]PostgreSQL SQL Agent[/bold cyan] - Interactive Chat Mode")
+    console.print("\n[bold cyan]SQL Agent[/bold cyan] - Interactive Chat Mode")
     console.print(Rule(style="cyan"))
     console.print(f"[dim]Thread ID:[/dim] {thread_id}")
     console.print("[dim]Type 'exit', 'quit' or 'q' to end the conversation[/dim]")
