@@ -29,8 +29,8 @@ A SQL agent with memory built using LangChain and LangGraph. Works with any SQL 
 Clone this repository and navigate to the project directory
 
 ```bash
-git clone https://github.com/josematute/pg-langgraph-agent.git
-cd pg-langgraph-agent
+git clone https://github.com/josematute/sql-langgraph-agent.git
+cd sql-langgraph-agent
 ```
 
 Make a copy of `example.env`
@@ -92,7 +92,7 @@ BEDROCK_MODEL_ID=anthropic.claude-haiku-4-5-20251001-v1:0
 ```bash
 LANGSMITH_API_KEY=your_langsmith_api_key_here
 LANGSMITH_TRACING=true
-LANGSMITH_PROJECT=pg-langgraph-agent
+LANGSMITH_PROJECT=sql-langgraph-agent
 ```
 
 **Model Provider Selection:**
@@ -220,7 +220,7 @@ LangSmith provides tracing, debugging, and monitoring for your agent. It's compl
 # In your .env file, uncomment and set:
 LANGSMITH_API_KEY=your_langsmith_api_key_here
 LANGSMITH_TRACING=true
-LANGSMITH_PROJECT=pg-langgraph-agent
+LANGSMITH_PROJECT=sql-langgraph-agent
 ```
 
 **Note:** The LangSmith configuration is commented out by default in `example.env`. You need to uncomment these lines and add your API key to enable tracing.
@@ -228,7 +228,7 @@ LANGSMITH_PROJECT=pg-langgraph-agent
 **To view traces:**
 
 1.  Go to [https://smith.langchain.com/](https://smith.langchain.com/) and sign in
-2.  Select your project: Use the project selector (top left) and choose `pg-langgraph-agent` (or whatever you set in `LANGSMITH_PROJECT`)
+2.  Select your project: Use the project selector (top left) and choose `sql-langgraph-agent` (or whatever you set in `LANGSMITH_PROJECT`)
 3.  View traces: After running the agent, traces will appear in the project. You'll see:
     -   Each agent run as a trace
     -   Tool calls (e.g., SQL queries executed)

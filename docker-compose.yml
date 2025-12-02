@@ -3,7 +3,7 @@ version: "3.8"
 services:
     postgres:
         image: postgres:16
-        container_name: pg-langgraph-agent-db
+        container_name: sql-langgraph-agent-db
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres

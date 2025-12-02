@@ -1,5 +1,5 @@
 [project]
-name = "pg-langgraph-agent"
+name = "sql-langgraph-agent"
 version = "0.1.0"
 description = "SQL agent with memory using LangGraph"
 readme = "README.md"
