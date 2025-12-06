@@ -2,6 +2,8 @@
 
 A SQL agent with memory built using LangChain and LangGraph. Works with any SQL database (PostgreSQL, SQLite, MySQL, etc.). Uses LangChain's `create_agent` API with LangGraph's checkpointing for conversation memory.
 
+![SQL Agent Demo](assets/showcase.gif)
+
 ## 📑 Table of Contents
 
 -   [Setup](#-setup)
